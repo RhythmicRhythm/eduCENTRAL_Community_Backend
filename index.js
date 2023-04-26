@@ -23,7 +23,7 @@ app.use(bodyParser.json());
 // cors 
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost:5173",  "https://educentral-community-frontend.onrender.com" ],
+    origin: ["http://localhost:5173",  "https://educentral-community-frontend.onrender.com" ],
     credentials: true,
   })
 );
