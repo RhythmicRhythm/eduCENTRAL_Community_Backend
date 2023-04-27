@@ -4,6 +4,56 @@ const Post = require("../models/postModel");
 const cloudinary = require("cloudinary").v2;
 const User = require("../models/userModel");
 
+// const createPost = asyncHandler(async (req, res) => {
+//   try {
+//     const { desc, userimage } = req.body;
+
+//     // Validation
+//     if (!desc) {
+//       res.status(400);
+//       throw new Error("Please fill in all fields");
+//     }
+
+//     // Handle Image upload
+//     let fileData = {};
+
+//     if (req.file) {
+//       // Fetch user from the database
+//       const user = await User.findById(req.user.id);
+
+//       // Create Post with user's name
+//       const post = await Post.create({
+//         author: req.user.id,
+//         name: user.firstname,
+//         desc: desc.replace(/\n/g, "<br/>"), // Replace newline characters with <br/> tags
+
+//         userimage,
+//         image: req.file.path,
+//       });
+
+//       res.status(201).json(post);
+//     } else {
+//       // Create Post without image
+//       const user = await User.findById(req.user.id);
+
+//       const post = await Post.create({
+//         author: req.user.id,
+//         name: user.firstname,
+//         desc,
+//         userimage,
+//       });
+
+//       res.status(201).json(post);
+//     }
+//   } catch (err) {
+//     console.error(err);
+//     const error = new Error(err.message);
+//     res.status(500).send(error);
+//   }
+// });
+
+
+
 const createPost = asyncHandler(async (req, res) => {
   try {
     const { desc, userimage } = req.body;
@@ -18,6 +68,12 @@ const createPost = asyncHandler(async (req, res) => {
     let fileData = {};
 
     if (req.file) {
+      // Upload image to Cloudinary and apply transformations
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: "edu",
+        transformation: [{ width: 1080, height: 1080, quality: 80, crop: "fill" }],
+      });
+
       // Fetch user from the database
       const user = await User.findById(req.user.id);
 
@@ -26,9 +82,8 @@ const createPost = asyncHandler(async (req, res) => {
         author: req.user.id,
         name: user.firstname,
         desc: desc.replace(/\n/g, "<br/>"), // Replace newline characters with <br/> tags
-
         userimage,
-        image: req.file.path,
+        image: result.secure_url,
       });
 
       res.status(201).json(post);
@@ -51,6 +106,11 @@ const createPost = asyncHandler(async (req, res) => {
     res.status(500).send(error);
   }
 });
+
+
+
+
+
 
 // Get all Posts
 const getPosts = asyncHandler(async (req, res) => {

@@ -14,6 +14,7 @@ const router = express.Router();
 const { upload } = require("../utils/fileUpload");
 
 router.post("/", protect, upload.single("image"), createPost);
+
 router.get("/getposts", protect, getPosts);
 router.get("/getpost/:id", protect, getPostById);
 router.get("/getpostuser", protect, getPostUser);
